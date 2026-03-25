@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WeatherApi.Application\WeatherNews.Application.csproj" />
-    <ProjectReference Include="..\..\..\src\WeatherApi.Infrastructure\WeatherNews.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\..\src\WeatherNews.Domain\WeatherNews.Domain.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApi.Application\WeatherNews.Application.csproj" />
+    <ProjectReference Include="..\..\src\WeatherApi.Infrastructure\WeatherNews.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\WeatherNews.Domain\WeatherNews.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

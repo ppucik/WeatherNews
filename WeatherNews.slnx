@@ -9,5 +9,5 @@
   <Project Path="src/WeatherApi.Infrastructure/WeatherNews.Infrastructure.csproj" />
   <Project Path="src/WeatherNews.API/WeatherNews.API.csproj" />
   <Project Path="src/WeatherNews.Domain/WeatherNews.Domain.csproj" />
-  <Project Path="tests/WeatherNewa.Tests/WeatherNews.Tests/WeatherNews.Tests.csproj" Id="3eeb1df3-091e-41bd-b9fc-d37d0991f258" />
+  <Project Path="tests/WeatherNews.Tests/WeatherNews.Tests.csproj" />
 </Solution>
