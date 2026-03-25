@@ -36,10 +36,7 @@ Vytvor samostatnu REST Web API sluzbu, ktora bude vracat aktualnu teplotu v mest
 
 - Pouzivame k8s a docker.
 
-
-> dotnet dev-certs https --trust
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZGV2LXVzZXIiLCJleHAiOjE3NzQ0ODI4NDQsImlzcyI6IndlYXRoZXItYXBpIiwiYXVkIjoid2VhdGhlci1hcGktY2xpZW50cyJ9.ZClhUtNuXENGSaRJzcbt-M_P2izdy2u8hPp3USLuaQk
+___
 
 Ako API spustíš v Dockeri:
 
