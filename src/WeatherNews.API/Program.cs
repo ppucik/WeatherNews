@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.HttpLogging;
+using System.Reflection;
 using Weather.Api.Auth;
 using Weather.Api.Docs;
 using WeatherNews.API.Docs;
@@ -34,6 +35,15 @@ if (app.Environment.IsDevelopment())
     app.MapScalarDocs();
     JwtAuthExtensions.GenerateJwtToken("dev-user", config);
 }
+
+app.MapGet("/", (IHostEnvironment env, IConfiguration cfg) =>
+{
+    var assembly = Assembly.GetExecutingAssembly();
+    var version = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown";
+    var datetiem = File.Exists(assembly.Location) ? File.GetLastWriteTime(assembly.Location).ToString() : "N/A";
+
+    return $"WeatherNews.API is running!\n\nVersion: {version}\nDate: {datetiem}\nENV: {env.EnvironmentName}";
+});
 
 app.UseHttpsRedirection();
 
