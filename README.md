@@ -38,7 +38,7 @@ Vytvor samostatnu REST Web API sluzbu, ktora bude vracat aktualnu teplotu v mest
 
 ___
 
-Ako API spustíš v Dockeri:
+### Ako API spustiť v Dockeri:
 
 1) Build:
 > docker build -t weathernews-api .
@@ -46,7 +46,12 @@ Ako API spustíš v Dockeri:
 2) Run:
 > docker run -p 8080:8080 -p 8081:8081 weathernews-api
 
-Ako pristúpiť k API a Scalar UI v Dockeri
+3) docker-compose
+> docker-compose build 
+
+> docker-compose up
+
+### Ako pristúpiť k API a Scalar UI v Dockeri
 
 API:
 > http://localhost:8080/api/temperature/Bratislava

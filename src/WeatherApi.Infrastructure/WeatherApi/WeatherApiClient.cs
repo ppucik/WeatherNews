@@ -82,7 +82,6 @@ public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiCl
         return Result<TemperatureReading>.Success(reading);
     }
 
-
     private sealed class WeatherApiResponse
     {
         public double TemperatureC { get; set; }
