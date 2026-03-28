@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Collections.Frozen;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WeatherNews.Application.Abstractions;
 using WeatherNews.Application.Common;
+using WeatherNews.Domain.Constants;
 using WeatherNews.Domain.Entities;
 using WeatherNews.Domain.Enums;
 
@@ -13,20 +13,11 @@ namespace WeatherNews.Infrastructure.WeatherApi;
 public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiClient> logger)
     : IWeatherProvider
 {
-    private static readonly FrozenDictionary<CityId, int> CityIds =
-        new Dictionary<CityId, int>
-        {
-            [CityId.Bratislava] = 1,
-            [CityId.Praha] = 2,
-            [CityId.Budapest] = 3,
-            [CityId.Vieden] = 4
-        }.ToFrozenDictionary();
-
     public async Task<Result<TemperatureReading>> GetTemperatureAsync(
         CityId cityId,
         CancellationToken cancellationToken = default)
     {
-        int Id = CityIds[cityId];
+        int Id = CityConstants.CityIds[cityId];
 
         logger.LogInformation("Requesting temperature for {City} (WeatherAPI cityId={CityId})", cityId, Id);
 
