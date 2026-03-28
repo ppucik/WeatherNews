@@ -1,9 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path="Dockerfile.txt" />
+    <File Path="Dockerfile" />
     <File Path="Net-Zadanie-2026.pdf" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="src/WeatherApi.Application/WeatherNews.Application.csproj" />
   <Project Path="src/WeatherApi.Infrastructure/WeatherNews.Infrastructure.csproj" />
   <Project Path="src/WeatherNews.API/WeatherNews.API.csproj" />
