@@ -38,46 +38,105 @@ Vytvor samostatnu REST Web API sluzbu, ktora bude vracat aktualnu teplotu v mest
 
 ___
 
-### Ako API spustiť v Dockeri:
+## Popis implementácie zadania:
 
-1) Build:
-> docker build -t weathernews-api .
+Ide o vysoko dostupnú REST službu na poskytovanie informácií o teplote, postavenú s dôrazom na odolnosť (resilience), výkon a cloud-native štandardy v prostredí .NET 10.
 
-2) Run:
-> docker run -p 8080:8080 -p 8081:8081 weathernews-api
+### 📋 Technické špecifikácie
 
-3) docker-compose
-> docker-compose build 
+* **Runtime:** `.NET 10`
+* **Architektúra:** Minimal APIs s využitím **Options patternu** a **Dependency Injection**.
+* **Odolnosť:** Implementovaný `Microsoft.Extensions.Http.Resilience` (Polly) pre robustnú komunikáciu s externým API.
+* **Caching:** Stratégia **Stale-While-Revalidate** pomocou `HybridCache` pre zabezpečenie dostupnosti dát aj pri výpadku externého zdroja.
+* **Monitoring:** Health Checks (Liveness/Readiness) a natívne Metrics endpointy s vlastným JSON formátovaním.
+* **Dokumentácia:** OpenAPI s interaktívnym **Scalar UI**.
 
-> docker-compose up
+---
 
-### Ako API testovat Health Checkom
+### 🚀 Rýchly štart (Docker)
 
-API:
-> http://localhost:8080/api/temperature/Bratislava
+Aplikácia je plne kontajnerizovaná a optimalizovaná pre beh v prostredí Kubernetes (k8s).
 
-Health check:
+#### 1. Spustenie cez Docker Compose
+```bash
+docker-compose up --build
+```
+#### 2. Manuálny Docker Build & Run
+```bash
+# Build obrazu
+docker build -t weathernews-api .
 
-> http://localhost:8080/health
+# Spustenie API
+docker run -p 8080:8080 -p 8081:8081 weathernews-api
 
-> http://localhost:8080/health/live
-
-> http://localhost:8080/health/ready
-
-Scalar UI:
-> http://localhost:8080/scalar
-
-JWT v Dockeri
-
-> docker run \
-  -e Auth__JwtKey="super-secret" \
+# Spustenie s konfiguráciou JWT (Environment Variables)
+docker run -p 8080:8080 \
+  -e Auth__JwtKey="pripadne-vas-32-znakovy-tajny-kluc" \
   -e Auth__Issuer="weather-api" \
   -e Auth__Audience="weather-api-clients" \
-  -p 8080:8080 \
   weathernews-api
+```
 
-Ako otestovať Scalar v Dockeri
+---
 
-> http://localhost:8080/scalar
+### 🛠️ API Endpointy
 
-> GET /api/temperature/{city}
+| Metóda | Endpoint                | Popis                                                      | Autentifikácia |
+| ------ | ----------------------- | ---------------------------------------------------------- | -------------- |
+| GET    | /                       | Základné informácie o verzii a prostredí                   | Nie            |
+| GET    | /api/temperature/{city} | Aktuálna teplota (Bratislava, Praha, Budapest, Viedeň)     | Bearer JWT     |
+| GET    | /scalar                 | Interaktívna API dokumentácia (Scalar UI)                  | Nie            |
+| GET    | /health                 | Health Check aplikácie                                     | Nie            |
+| GET    | /health/live            | Health Check Liveness (základná kontrola procesu)          | Nie            |
+| GET    | /health/ready           | Health Check Readiness (kontrola so všetkými závislosťami) | Nie            |
+| GET    | /metrics                | Základné metriky                                           | Nie            |
+
+---
+
+### 🏥 Monitoring & Health Checks
+
+Služba implementuje separátne sondy optimalizované pre cloudové prostredia:
+
+- **Liveness** (`/health/live`)  
+  Kontroluje, či proces aplikácie beží. V prípade zlyhania orchestrátor kontajner reštartuje.
+
+- **Readiness** (`/health/ready`)  
+  Hĺbková kontrola, ktorá overuje dostupnosť externého WeatherAPI.  
+  Ak externá služba nie je dostupná, endpoint vráti detailný JSON so stavom **Unhealthy**  
+  a orchestrátor dočasne prestane na túto inštanciu smerovať požiadavky.
+
+- **Metrics** (`/metrics`)  
+  Export systémových metrík (RAM, CPU, ThreadCount, Uptime) v prehľadnom JSON formáte.
+
+---
+
+### 🔑 Autentifikácia & Bezpečnosť
+
+API je zabezpečené pomocou **JWT Bearer Tokenu**.
+
+- **Development Mode:**  
+  Pri spustení v prostredí Development aplikácia automaticky generuje platný DEV JWT token do konzoly (logs) pre okamžité testovanie.
+
+- **Produkcia:**  
+  Nastavenia sú plne konfigurovateľné cez `AuthOptions` pomocou Environment Variables alebo Secret Managerov.
+
+---
+
+### 🏗️ Architektonické rozhodnutia
+
+1. **Resilience Pipeline:**  
+  Komunikácia s externým API využíva inteligentný Retry mechanizmus.  
+  Circuit Breaker chráni systém pred kaskádovým zlyhaním v prípade dlhodobého výpadku dodávateľa dát.
+
+2. **Smart Caching:**  
+  Dáta z WeatherAPI sa aktualizujú len v špecifických časoch (9:00 a 16:00 UTC).  
+  `HybridCache` zabezpečuje, že aplikácia dokáže vrátiť *stale* (staršie) dáta, čím garantuje dostupnosť aj pri výpadku.
+
+3. **Result Pattern:**  
+  Namiesto nákladného vyhadzovania výnimiek pre bežné logické stavy (napr. neexistujúce mesto)  
+  používame funkcionálny `Result<T>` wrapper.  
+  To zvyšuje výkon (menej alokácií na stacku) a predvídateľnosť kódu.
+
+4. **Clean Code & Separation of Concerns:**  
+  `Program.cs` je udržiavaný v minimalistickom stave (*Thin Program.cs*).  
+  Logika endpointov, konfigurácia a infraštruktúra sú striktne oddelené do samostatných modulov a extension metód.

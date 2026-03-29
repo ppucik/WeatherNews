@@ -30,14 +30,14 @@ public static class ServiceEndpoints
         app.MapHealthChecks("/health")
             .WithName("GetHealth");
 
-        // Liveness (Základná kontrola procesu)
+        // Liveness (základná kontrola procesu)
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
             Predicate = _ => false,
             ResponseWriter = HealthCheckFormatter.WriteJsonResponse
         }).WithName("GetLiveness");
 
-        // Readiness (Kontrola so všetkými závislosťami)
+        // Readiness (kontrola so všetkými závislosťami)
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("ready"),
