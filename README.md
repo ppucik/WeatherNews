@@ -44,7 +44,6 @@ Ide o vysoko dostupnú REST službu na poskytovanie informácií o teplote, post
 
 ### 📋 Technické špecifikácie
 
-* **Runtime:** `.NET 10`
 * **Architektúra:** Minimal APIs s využitím **Options patternu** a **Dependency Injection**.
 * **Odolnosť:** Implementovaný `Microsoft.Extensions.Http.Resilience` (Polly) pre robustnú komunikáciu s externým API.
 * **Caching:** Stratégia **Stale-While-Revalidate** pomocou `HybridCache` pre zabezpečenie dostupnosti dát aj pri výpadku externého zdroja.
@@ -85,11 +84,11 @@ docker run -p 8080:8080 \
 | ------ | ----------------------- | ---------------------------------------------------------- | -------------- |
 | GET    | /                       | Základné informácie o verzii a prostredí                   | Nie            |
 | GET    | /api/temperature/{city} | Aktuálna teplota (Bratislava, Praha, Budapest, Viedeň)     | Bearer JWT     |
-| GET    | /scalar                 | Interaktívna API dokumentácia (Scalar UI)                  | Nie            |
 | GET    | /health                 | Health Check aplikácie                                     | Nie            |
 | GET    | /health/live            | Health Check Liveness (základná kontrola procesu)          | Nie            |
 | GET    | /health/ready           | Health Check Readiness (kontrola so všetkými závislosťami) | Nie            |
 | GET    | /metrics                | Základné metriky                                           | Nie            |
+| GET    | /scalar                 | Interaktívna API dokumentácia (Scalar UI)                  | Nie            |
 
 ---
 
@@ -140,3 +139,5 @@ API je zabezpečené pomocou **JWT Bearer Tokenu**.
 4. **Clean Code & Separation of Concerns:**  
   `Program.cs` je udržiavaný v minimalistickom stave (*Thin Program.cs*).  
   Logika endpointov, konfigurácia a infraštruktúra sú striktne oddelené do samostatných modulov a extension metód.
+
+  ---
