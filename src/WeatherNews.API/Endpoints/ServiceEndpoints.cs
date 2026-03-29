@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using System.Reflection;
+using WeatherNews.API.Extensions;
 
 namespace WeatherNews.API.Endpoints;
 
@@ -6,7 +8,7 @@ public static class ServiceEndpoints
 {
     public static void MapServiceInfoEndpoints(this IEndpointRouteBuilder app)
     {
-        // Root endpoint s informáciami o službe
+        // --- 1. Root endpoint s informáciami o službe ---
         app.MapGet("/", (IHostEnvironment env) =>
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -24,11 +26,25 @@ public static class ServiceEndpoints
         })
         .WithName("GetServiceInfo");
 
-        // 1. Health Check Endpoint
+        // ---  2. Health Check Endpoint ---
         app.MapHealthChecks("/health")
             .WithName("GetHealth");
 
-        // 2. Základný Metrics Endpoint
+        // Liveness (Základná kontrola procesu)
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false,
+            ResponseWriter = HealthCheckFormatter.WriteJsonResponse
+        }).WithName("GetLiveness");
+
+        // Readiness (Kontrola so všetkými závislosťami)
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("ready"),
+            ResponseWriter = HealthCheckFormatter.WriteJsonResponse
+        }).WithName("GetReadiness");
+
+        // --- 3. Základný Metrics Endpoint ---
         app.MapGet("/metrics", () =>
         {
             var process = System.Diagnostics.Process.GetCurrentProcess();

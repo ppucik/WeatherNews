@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using WeatherNews.Application.Abstractions;
 using WeatherNews.Application.Temperature;
@@ -22,7 +23,7 @@ public static class DependencyInjection
         // 2. Hybrid cache
         services.AddHybridCache();
 
-        // 3. Singleton služby
+        // 3. Singleton services
         services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<ITemperatureCache, TemperatureCache>();
 
@@ -52,8 +53,14 @@ public static class DependencyInjection
             options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
         });
 
-        // 5. Scoped služby
+        // 5. Scoped services
         services.AddScoped<ITemperatureService, TemperatureService>();
+
+        // 6. Health checks
+        services.AddHealthChecks()
+                .AddCheck<WeatherApiHealthCheck>("weather_api_check",
+                    failureStatus: HealthStatus.Degraded,
+                    tags: ["ready"]);
 
         return services;
     }

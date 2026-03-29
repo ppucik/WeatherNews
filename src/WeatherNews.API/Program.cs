@@ -32,9 +32,6 @@ builder.Services.AddInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddWeatherOpenApi();
 
-// Health checks
-builder.Services.AddHealthChecks();
-
 var app = builder.Build();
 
 // --- 2. Middleware Pipeline ---
