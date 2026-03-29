@@ -3,7 +3,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="Dockerfile" />
-    <File Path="Net-Zadanie-2026.pdf" />
+    <File Path="docs/Net-Zadanie-2026.pdf" />
     <File Path="README.md" />
   </Folder>
   <Project Path="docker-compose.dcproj">
