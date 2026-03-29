@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WeatherNews.API.Configuration;
 
 namespace Weather.Api.Auth;
 
 public static class JwtAuthExtensions
 {
-    public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddJwtAuth(this IServiceCollection services)
     {
-        var key = config["Auth:JwtKey"] ?? "dev-secret-key-change-me";
-        var issuer = config["Auth:Issuer"] ?? "weather-api";
-        var audience = config["Auth:Audience"] ?? "weather-api-clients";
+        using var serviceProvider = services.BuildServiceProvider();
+        var authOptions = serviceProvider.GetRequiredService<IOptions<AuthOptions>>().Value;
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -23,9 +24,9 @@ public static class JwtAuthExtensions
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                    ValidIssuer = authOptions.Issuer,
+                    ValidAudience = authOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.JwtKey))
                 };
             });
 
@@ -34,14 +35,15 @@ public static class JwtAuthExtensions
         return services;
     }
 
-    internal static void GenerateJwtToken(string username, IConfiguration config)
+    internal static void LogDevToken(this IServiceProvider serviceProvider)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Auth:JwtKey"]!));
+        var authOptions = serviceProvider.GetRequiredService<IOptions<AuthOptions>>().Value;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.JwtKey));
 
         var token = new JwtSecurityToken(
-            issuer: config["Auth:Issuer"],
-            audience: config["Auth:Audience"],
-            claims: [new Claim(ClaimTypes.Name, username)],
+            issuer: authOptions.Issuer,
+            audience: authOptions.Audience,
+            claims: [new Claim(ClaimTypes.Name, authOptions.UserName)],
             expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );

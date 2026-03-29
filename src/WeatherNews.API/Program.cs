@@ -1,15 +1,22 @@
 using Microsoft.AspNetCore.HttpLogging;
-using System.Reflection;
 using Weather.Api.Auth;
 using Weather.Api.Docs;
+using WeatherNews.API.Configuration;
 using WeatherNews.API.Docs;
 using WeatherNews.API.Endpoints;
 using WeatherNews.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var config = builder.Configuration;
+// --- 1. Registrácia služieb  ---
 
+// Konfigurácia Options s validáciou
+builder.Services.AddOptions<AuthOptions>()
+    .BindConfiguration(AuthOptions.SECTION_NAME)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+// Logovanie HTTP požiadaviek
 builder.Services.AddHttpLogging(o =>
 {
     o.LoggingFields = HttpLoggingFields.RequestPath |
@@ -17,36 +24,37 @@ builder.Services.AddHttpLogging(o =>
                       HttpLoggingFields.ResponseStatusCode;
 });
 
-builder.Services.AddJwtAuth(config);
-builder.Services.AddInfrastructure(config);
+// Registrácia vlastných modulov
+builder.Services.AddJwtAuth();
+builder.Services.AddInfrastructure();
+
+// Dokumentácia
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddWeatherOpenApi();
 
+// Health checks
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
-app.UseHttpLogging();
-
-app.UseAuthentication();
-app.UseAuthorization();
+// --- 2. Middleware Pipeline ---
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarDocs();
-    JwtAuthExtensions.GenerateJwtToken("dev-user", config);
+    app.Services.LogDevToken();
 }
 
-app.MapGet("/", (IHostEnvironment env, IConfiguration cfg) =>
-{
-    var assembly = Assembly.GetExecutingAssembly();
-    var version = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "Unknown";
-    var datetiem = File.Exists(assembly.Location) ? File.GetLastWriteTime(assembly.Location).ToString() : "N/A";
-
-    return $"WeatherNews.API is running!\n\nVersion: {version}\nDate: {datetiem}\nENV: {env.EnvironmentName}";
-});
-
 app.UseHttpsRedirection();
+app.UseHttpLogging();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// --- 3. Endpointy ---
+
+app.MapServiceInfoEndpoints();
 app.MapTemperatureEndpoints();
 
 app.Run();
