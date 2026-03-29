@@ -51,10 +51,18 @@ ___
 
 > docker-compose up
 
-### Ako pristúpiť k API a Scalar UI v Dockeri
+### Ako API testovat Health Checkom
 
 API:
 > http://localhost:8080/api/temperature/Bratislava
+
+Health check:
+
+> http://localhost:8080/health
+
+> http://localhost:8080/health/live
+
+> http://localhost:8080/health/ready
 
 Scalar UI:
 > http://localhost:8080/scalar
