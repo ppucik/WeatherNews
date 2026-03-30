@@ -7,4 +7,5 @@ data:
   ASPNETCORE_ENVIRONMENT: "Production"
   ASPNETCORE_URLS: "http://+:8080"
   WeatherApi__BaseUrl: "https://nejakepocasie.net/"
-  WeatherApi__TimeoutSeconds: "10"
+  WeatherApi__TimeoutSeconds: "30"
+  LOG_LEVEL: "Information"
