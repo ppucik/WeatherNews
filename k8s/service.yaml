@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: weathernews-api-service
+  namespace: weather-system
+spec:
+  selector:
+    app: weathernews-api
+  ports:
+    - protocol: TCP
+      port: 80      # Externí port servisy
+      targetPort: 8080 # Port v kontejneru
+  type: ClusterIP # Pro veřejný přístup by se použil LoadBalancer nebo Ingress

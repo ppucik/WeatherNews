@@ -5,6 +5,13 @@
     <File Path="Dockerfile" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Solution Items/k8s/">
+    <File Path="k8s/configmap.yaml" />
+    <File Path="k8s/deployment.yaml" />
+    <File Path="k8s/hpa.yaml" />
+    <File Path="k8s/namespace.yaml" />
+    <File Path="k8s/service.yaml" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>

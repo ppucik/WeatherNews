@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weathernews-api
+  namespace: weather-system
+  labels:
+    app: weathernews-api
+spec:
+  replicas: 3  # Začínáme se 3 instancemi pro vysokou dostupnost
+  selector:
+    matchLabels:
+      app: weathernews-api
+  template:
+    metadata:
+      labels:
+        app: weathernews-api
+    spec:
+      containers:
+      - name: api
+        # Nahraďte vaší cestou k image (GHCR nebo Docker Hub)
+        image: ghcr.io/vas-uzivatel/weathernews-api:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: weather-api-config
+        env:
+        - name: Bearer__Token # Příklad, jak předat secret (token by měl být v Secretu)
+          valueFrom:
+            secretKeyRef:
+              name: weather-secrets
+              key: auth-token
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        # Health checks jsou kritické pro "Resilience"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 5
