@@ -41,6 +41,12 @@ jobs:
             type=sha,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Debug Docker metadata outputs
+        run: |
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo "Labels: ${{ steps.meta.outputs.labels }}"
+          echo "Docker image name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+
       # Samotný Build a Push
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -48,8 +54,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ id.meta.outputs.tags }}
-          labels: ${{ id.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           # Cache pre zrýchlenie ďalších buildov
           cache-from: type=gha
           cache-to: type=gha,mode=max
