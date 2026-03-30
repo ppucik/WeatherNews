@@ -80,15 +80,13 @@ docker run -p 8080:8080 \
 
 ### 🛠️ API Endpointy
 
-| Metóda | Endpoint                | Popis                                                      | Autentifikácia |
-| ------ | ----------------------- | ---------------------------------------------------------- | -------------- |
-| GET    | /                       | Základné informácie o verzii a prostredí                   | Nie            |
-| GET    | /api/temperature/{city} | Aktuálna teplota (Bratislava, Praha, Budapest, Viedeň)     | Bearer JWT     |
-| GET    | /health                 | Health Check aplikácie                                     | Nie            |
-| GET    | /health/live            | Health Check Liveness (základná kontrola procesu)          | Nie            |
-| GET    | /health/ready           | Health Check Readiness (kontrola so všetkými závislosťami) | Nie            |
-| GET    | /metrics                | Základné metriky                                           | Nie            |
-| GET    | /scalar                 | Interaktívna API dokumentácia (Scalar UI)                  | Nie            |
+| Metóda | Endpoint          | Popis                                    | Autentifikácia |
+| ------ | ----------------- | ---------------------------------------- | -------------- |
+| GET    | /                 | Základné informácie o verzii a prostredí | Nie            |
+| GET    | /api/temperature/ | Aktuálna teplota v meste                 | Bearer JWT     |
+| GET    | /health           | Health check aplikácie                   | Nie            |
+| GET    | /metrics          | Základné metriky                         | Nie            |
+| GET    | /scalar           | Interaktívna API dokumentácia            | Nie            |
 
 ---
 
