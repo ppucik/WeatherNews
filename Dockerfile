@@ -1,13 +1,14 @@
 # ============================
 # 1) Build stage
 # ============================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore
 COPY ["WeatherNews.API/WeatherNews.API.csproj", "WeatherNews.API/"]
-COPY ["WeatherNews.Domain/WeatherNews.Domain.csproj", "WeatherNews.Domain/"]
 COPY ["WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "WeatherNews.Infrastructure/"]
+COPY ["WeatherNews.Application/WeatherNews.Application.csproj", "src/WeatherNews.Application/"]
+COPY ["WeatherNews.Domain/WeatherNews.Domain.csproj", "WeatherNews.Domain/"]
 
 RUN dotnet restore "WeatherNews.API/WeatherNews.API.csproj"
 
@@ -19,7 +20,7 @@ RUN dotnet publish "WeatherNews.API.csproj" -c Release -o /app/publish --no-rest
 # ============================
 # 2) Runtime stage
 # ============================
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # Copy published output
