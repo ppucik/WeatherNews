@@ -3,7 +3,13 @@
 **/bin
 **/obj
 **/out
+.git
+.gitignore
+.env
+.env.local
+*.md
 appsettings.Development.json
+README.md
 docker-compose.yml
-Dockerfile
 .dockerignore
+node_modules
