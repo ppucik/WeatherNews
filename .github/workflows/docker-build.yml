@@ -9,8 +9,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Názov imagu: github_user/repo_name/image_name
   IMAGE_NAME: ${{ github.repository }}/weathernews-api
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Dočasné riešenie pre Node.js 24
 
 jobs:
   build-and-push:
@@ -31,7 +31,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Extrakcia metadát (tagy, labely)
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -58,5 +57,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # Cache pre zrýchlenie ďalších buildov
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}
