@@ -1,6 +1,36 @@
 @WeatherNews.API_HostAddress = http://localhost:5012
+# Sem vlož testovací JWT token vygenerovaný auth službou
+@auth_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZGV2LXVzZXIiLCJleHAiOjE3NzUwMzIwOTksImlzcyI6IndlYXRoZXItYXBpIiwiYXVkIjoid2VhdGhlci1hcGktY2xpZW50cyJ9.vFwN9biOTy1fxO_jJhfqadlH-12eyNW7dqktMaYGm3c
 
-GET {{WeatherNews.API_HostAddress}}/weatherforecast/
+### Získanie informácií o službe
+GET {{WeatherNews.API_HostAddress}}/
 Accept: application/json
 
-###
+### Test bez autorizácie (očakávaná 401 Unauthorized)
+GET {{WeatherNews.API_HostAddress}}/api/temperature/bratislava
+Accept: application/json
+
+### Získanie teploty - Bratislava
+GET {{WeatherNews.API_HostAddress}}/api/temperature/bratislava
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### Získanie teploty - Praha
+GET {{WeatherNews.API_HostAddress}}/api/temperature/praha
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### Získanie teploty - Budapešť
+GET {{WeatherNews.API_HostAddress}}/api/temperature/budapest
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### Získanie teploty - Viedeň
+GET {{WeatherNews.API_HostAddress}}/api/temperature/vieden
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+### Test neexistujúceho mesta (očakávaná 404 NotFound)
+GET {{WeatherNews.API_HostAddress}}/api/temperature/london
+Authorization: Bearer {{auth_token}}
+Accept: application/json
