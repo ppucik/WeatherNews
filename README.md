@@ -138,4 +138,7 @@ API je zabezpečené pomocou **JWT Bearer Tokenu**.
   `Program.cs` je udržiavaný v minimalistickom stave (*Thin Program.cs*).  
   Logika endpointov, konfigurácia a infraštruktúra sú striktne oddelené do samostatných modulov a extension metód.
 
-  ---
+
+```bash
+docker build -t weathernews-test --no-cache . > build_log.txt 2>&1
+```
