@@ -39,8 +39,10 @@ WORKDIR /app
 # RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Non-root user for security
-RUN addgroup --system --gid 1001 appgroup \
- && adduser  --system --uid 1001 --ingroup appgroup appuser
+RUN useradd -m -u 1000 appuser
+
+#RUN groupadd --system --gid 1001 appgroup \
+#  && useradd --system --uid 1001 --gid appgroup --create-home appuser
 
 # Create log directory with correct permissions
 RUN mkdir -p /app/logs && chown appuser:appgroup /app/logs
@@ -48,7 +50,7 @@ RUN mkdir -p /app/logs && chown appuser:appgroup /app/logs
 # Copy published output from build stage
 COPY --from=build --chown=appuser:appgroup /app/publish .
 
-USER appuser
+USER useradd
 
 # Metadata and labels
 LABEL org.opencontainers.image.source="https://github.com/ppucik/WeatherNews" \
