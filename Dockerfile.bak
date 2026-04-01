@@ -2,7 +2,6 @@
 # 1) Build stage (Izolované prostredie pre kompiláciu)
 # ============================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Kopírujeme .csproj súbory zo správnej cesty v repozitári
@@ -11,17 +10,14 @@ COPY ["src/WeatherNews.API/WeatherNews.API.csproj", "src/WeatherNews.API/"]
 COPY ["src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "src/WeatherNews.Infrastructure/"]
 COPY ["src/WeatherNews.Application/WeatherNews.Application.csproj", "src/WeatherNews.Application/"]
 COPY ["src/WeatherNews.Domain/WeatherNews.Domain.csproj", "src/WeatherNews.Domain/"]
-COPY ["tests/WeatherNews.Tests/WeatherNews.Tests.csproj", "tests/WeatherNews.Tests/"]
-COPY [".", "."]
 
-#RUN dotnet restore
-RUN dotnet restore "WeatherNews.slnx"
+RUN dotnet restore
 
 # Copy remaining sources
 COPY . .
 
 # Run tests
- RUN dotnet test tests/WeatherNews.Tests/WeatherNews.Tests.csproj \
+RUN dotnet test tests/WeatherNews.Tests/WeatherNews.Tests.csproj \
     --no-restore \
     --configuration Release \
     --logger "console;verbosity=minimal"
@@ -40,13 +36,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # curl pre healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Non-root user for security
-# RUN useradd -m -u 1000 appuser
+RUN useradd -m -u 1000 appuser
 
-RUN groupadd --system --gid 1001 appgroup \
-  && useradd --system --uid 1001 --gid appgroup --create-home appuser
+#RUN groupadd --system --gid 1001 appgroup \
+#  && useradd --system --uid 1001 --gid appgroup --create-home appuser
 
 # Create log directory with correct permissions
 RUN mkdir -p /app/logs && chown appuser:appgroup /app/logs
