@@ -22,7 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\WeatherApi.Application\WeatherNews.Application.csproj" />
     <ProjectReference Include="..\..\src\WeatherApi.Infrastructure\WeatherNews.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\WeatherNews.Application\WeatherNews.Application.csproj" />
     <ProjectReference Include="..\..\src\WeatherNews.Domain\WeatherNews.Domain.csproj" />
+    <ProjectReference Include="..\..\src\WeatherNews.Infrastructure\WeatherNews.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

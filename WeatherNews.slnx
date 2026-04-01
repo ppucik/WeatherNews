@@ -18,9 +18,9 @@
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
-  <Project Path="src/WeatherApi.Application/WeatherNews.Application.csproj" />
-  <Project Path="src/WeatherApi.Infrastructure/WeatherNews.Infrastructure.csproj" />
   <Project Path="src/WeatherNews.API/WeatherNews.API.csproj" />
+  <Project Path="src/WeatherNews.Application/WeatherNews.Application.csproj" />
   <Project Path="src/WeatherNews.Domain/WeatherNews.Domain.csproj" />
+  <Project Path="src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj" />
   <Project Path="tests/WeatherNews.Tests/WeatherNews.Tests.csproj" />
 </Solution>
