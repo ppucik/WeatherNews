@@ -2,25 +2,32 @@
 # 1) Build stage (Izolované prostredie pre kompiláciu)
 # ============================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /build 
-
-# Skopírujeme .sln a NuGet.Config ak existujú (pomáha pri restore)
-COPY *.sln ./
+WORKDIR /src
 
 # Kopírujeme .csproj súbory zo správnej cesty v repozitári
+COPY WeatherNews.slnx .
 COPY ["src/WeatherNews.API/WeatherNews.API.csproj", "src/WeatherNews.API/"]
 COPY ["src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "src/WeatherNews.Infrastructure/"]
 COPY ["src/WeatherNews.Application/WeatherNews.Application.csproj", "src/WeatherNews.Application/"]
 COPY ["src/WeatherNews.Domain/WeatherNews.Domain.csproj", "src/WeatherNews.Domain/"]
 
-RUN dotnet restore "src/WeatherNews.API/WeatherNews.API.csproj"
+RUN dotnet restore
 
-# Skopíruje celý obsah repozitára do /build v kontajneri
-COPY . . 
+# Copy remaining sources
+COPY . .
 
-# Prepne sa do priečinka projektu
-WORKDIR "/build/src/WeatherNews.API"
-RUN dotnet publish "WeatherNews.API.csproj" -c Release -o /app/publish --no-restore 
+# Run tests
+RUN dotnet test tests/WeatherNews.Tests/WeatherNews.Tests.csproj \
+    --no-restore \
+    --configuration Release \
+    --logger "console;verbosity=minimal"
+
+# Publish API
+RUN dotnet publish src/WeatherNews.API/WeatherNews.API.csproj \
+    --no-restore \
+    --configuration Release \
+    --output /app/publish \
+    /p:UseAppHost=false
 
 # ============================
 # 2) Runtime stage (Čistý obraz pre produkciu)
@@ -29,28 +36,33 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # curl pre healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Bezpečnostný užívateľ
-RUN useradd -m -u 1000 appuser
+# Non-root user for security
+RUN addgroup --system --gid 1001 appgroup \
+ && adduser  --system --uid 1001 --ingroup appgroup appuser
 
-# Kopírujeme LEN výsledok buildu (z /app/publish do aktuálneho /app)
-COPY --from=build /app/publish .
-RUN chown -R appuser:appuser /app
+# Create log directory with correct permissions
+RUN mkdir -p /app/logs && chown appuser:appgroup /app/logs
 
-# Metadata a prostredie
+# Copy published output from build stage
+COPY --from=build --chown=appuser:appgroup /app/publish .
+
+USER appuser
+
+# Metadata and labels
 LABEL org.opencontainers.image.source="https://github.com/ppucik/WeatherNews" \
       org.opencontainers.image.title="WeatherNews API"
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS="http://+:8080;https://+:8081"
+ENV DOTNET_RUNNING_IN_CONTAINER=true
 
 EXPOSE 8080
 EXPOSE 8081
 
-ENV ASPNETCORE_URLS="http://+:8080;https://+:8081"
-ENV ASPNETCORE_ENVIRONMENT=Production
-
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
 
-USER appuser
 ENTRYPOINT ["dotnet", "WeatherNews.API.dll"]
