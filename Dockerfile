@@ -4,6 +4,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /build 
 
+# Skopírujeme .sln a NuGet.Config ak existujú (pomáha pri restore)
+COPY *.sln ./
+
 # Kopírujeme .csproj súbory zo správnej cesty v repozitári
 COPY ["src/WeatherNews.API/WeatherNews.API.csproj", "src/WeatherNews.API/"]
 COPY ["src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "src/WeatherNews.Infrastructure/"]
