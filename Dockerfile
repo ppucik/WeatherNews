@@ -1,10 +1,11 @@
 # ============================
-# 1) Build stage
+# 1) Build stage (Izolované prostredie pre kompiláciu)
 # ============================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
+# Použijeme /build, aby sme sa vyhli kolízii s vaším priečinkom 'src'
+WORKDIR /build 
 
-# Copy csproj and restore
+# Kopírujeme .csproj súbory zo správnej cesty v repozitári
 COPY ["src/WeatherNews.API/WeatherNews.API.csproj", "src/WeatherNews.API/"]
 COPY ["src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "src/WeatherNews.Infrastructure/"]
 COPY ["src/WeatherNews.Application/WeatherNews.Application.csproj", "src/WeatherNews.Application/"]
@@ -12,40 +13,39 @@ COPY ["src/WeatherNews.Domain/WeatherNews.Domain.csproj", "src/WeatherNews.Domai
 
 RUN dotnet restore "src/WeatherNews.API/WeatherNews.API.csproj"
 
-# Copy everything and build
-COPY . .
+# Skopíruje celý obsah repozitára do /build v kontajneri
+COPY . . 
 
-WORKDIR "/src/WeatherApi.Application"
-RUN dotnet publish "WeatherApi.Application.csproj" -c Release -o /app/publish --no-restore
+# Prepne sa do priečinka projektu (cesta je teraz jasná: /build/src/...)
+WORKDIR "/build/src/WeatherNews.API"
+RUN dotnet publish "WeatherNews.API.csproj" -c Release -o /app/publish --no-restore 
 
 # ============================
-# 2) Runtime stage
+# 2) Runtime stage (Čistý obraz pre produkciu)
 # ============================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
-WORKDIR /app
+WORKDIR /app 
 
-# Create non-root user for security
+# Bezpečnostný užívateľ
 RUN useradd -m -u 1000 appuser
 
-# Copy published output
-COPY --from=build /app/publish .
-RUN chown -R appuser:appuser /app
+# Kopírujeme LEN výsledok buildu (z /app/publish do aktuálneho /app)
+COPY --from=build /app/publish . [cite: 3]
+RUN chown -R appuser:appuser /app [cite: 3]
 
-# Metadata labels
+# Metadata a prostredie
 LABEL org.opencontainers.image.source="https://github.com/ppucik/WeatherNews" \
-      org.opencontainers.image.title="WeatherNews API" \
-      org.opencontainers.image.description="Weather News API Service"
+      org.opencontainers.image.title="WeatherNews API"
 
-# Expose ports
 EXPOSE 8080
 EXPOSE 8081
 
-# Environment variables for Kestrel
 ENV ASPNETCORE_URLS="http://+:8080;https://+:8081"
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Switch to non-root user
-USER appuser
+# Health check [cite: 4]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1 [cite: 4]
 
-# Run the app
-ENTRYPOINT ["dotnet", "WeatherApi.Application.dll"]
+USER appuser [cite: 4]
+ENTRYPOINT ["dotnet", "WeatherNews.API.dll"]
