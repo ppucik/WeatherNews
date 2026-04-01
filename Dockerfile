@@ -5,14 +5,16 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy csproj and restore
-COPY ["src/WeatherApi.Application/WeatherApi.Application.csproj", "WeatherApi.Application/"]
-COPY ["src/WeatherApi.Infrastructure/WeatherApi.Infrastructure.csproj", "WeatherApi.Infrastructure/"]
-COPY ["src/WeatherNews.Domain/WeatherNews.Domain.csproj", "WeatherNews.Domain/"]
+COPY ["src/WeatherNews.API/WeatherNews.API.csproj", "src/WeatherNews.API/"]
+COPY ["src/WeatherNews.Infrastructure/WeatherNews.Infrastructure.csproj", "src/WeatherNews.Infrastructure/"]
+COPY ["src/WeatherNews.Application/WeatherNews.Application.csproj", "src/WeatherNews.Application/"]
+COPY ["src/WeatherNews.Domain/WeatherNews.Domain.csproj", "src/WeatherNews.Domain/"]
 
-RUN dotnet restore "WeatherApi.Application/WeatherApi.Application.csproj"
+RUN dotnet restore "src/WeatherNews.API/WeatherNews.API.csproj"
 
 # Copy everything and build
 COPY . .
+
 WORKDIR "/src/WeatherApi.Application"
 RUN dotnet publish "WeatherApi.Application.csproj" -c Release -o /app/publish --no-restore
 
