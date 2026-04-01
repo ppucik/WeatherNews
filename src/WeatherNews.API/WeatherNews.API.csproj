@@ -16,8 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WeatherApi.Application\WeatherNews.Application.csproj" />
-    <ProjectReference Include="..\WeatherApi.Infrastructure\WeatherNews.Infrastructure.csproj" />
     <ProjectReference Include="..\WeatherNews.Application\WeatherNews.Application.csproj" />
     <ProjectReference Include="..\WeatherNews.Infrastructure\WeatherNews.Infrastructure.csproj" />
   </ItemGroup>
