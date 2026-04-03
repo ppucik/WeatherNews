@@ -14,5 +14,5 @@ services:
       Auth__JwtKey: "dev-secret-key-change-weather-api"
       Auth__Issuer: "weather-api"
       Auth__Audience: "weather-api-clients"
-      WeatherApi__ApiKey: "27c4d6abc86c4dfe94975855260304"
+      WeatherApi__ApiKey: "${WEATHER_API_KEY}"
     restart: unless-stopped

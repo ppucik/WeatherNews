@@ -1,6 +1,6 @@
 ﻿using Scalar.AspNetCore;
 
-namespace Weather.Api.Docs;
+namespace WeatherNews.Api.Docs;
 
 public static class ScalarExtensions
 {

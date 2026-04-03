@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.HttpLogging;
-using Weather.Api.Auth;
-using Weather.Api.Docs;
+using WeatherNews.Api.Auth;
+using WeatherNews.Api.Docs;
 using WeatherNews.API.Configuration;
 using WeatherNews.API.Docs;
 using WeatherNews.API.Endpoints;
@@ -40,7 +40,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarDocs();
-    app.Services.LogDevToken();
 }
 
 app.UseHttpsRedirection();
@@ -52,6 +51,7 @@ app.UseAuthorization();
 // --- 3. Endpointy ---
 
 app.MapServiceInfoEndpoints();
+app.MapAuthEndpoints();
 app.MapTemperatureEndpoints();
 
 app.Run();

@@ -4,7 +4,6 @@ services:
   weathernews-api:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
-      WeatherApi__ApiKey: ${WEATHER_API_KEY}
     ports:
       - "8080:8080"
       - "8081:8081"

@@ -95,16 +95,19 @@ alebo pridajte do `appsettings.json`:
 
 ```json
 "WeatherApi": {
-  "ApiKey": "VášKľúč",
-  "BaseUrl": "https://api.weatherapi.com/v1/"
+  "BaseUrl": "https://api.weatherapi.com/v1/",
+  "ApiKey": "VášKľúč"
 }
 ```
+
+---
 
 ### 🛠️ API Endpointy
 
 | Metóda | Endpoint          | Popis                                    | Autentifikácia |
 | ------ | ----------------- | ---------------------------------------- | -------------- |
 | GET    | /                 | Základné informácie o verzii a prostredí | Nie            |
+| POST   | /login            | Prihlásenie a vygenerovanie JWT tokenu   | Nie            |
 | GET    | /api/temperature/ | Aktuálna teplota v meste                 | Bearer JWT     |
 | GET    | /health           | Health check aplikácie                   | Nie            |
 | GET    | /metrics          | Základné metriky                         | Nie            |
@@ -131,13 +134,14 @@ Služba implementuje separátne sondy optimalizované pre cloudové prostredia:
 
 ### 🔑 Autentifikácia & Bezpečnosť
 
-API je zabezpečené pomocou **JWT Bearer Tokenu**.
+API využíva **JWT Bearer Token** na zabezpečenie chránených endpointov.
 
-- **Development Mode:**  
-  Pri spustení v prostredí Development aplikácia automaticky generuje platný DEV JWT token do konzoly (logs) pre okamžité testovanie.
+- **Získanie tokenu:** Pre testovacie účely použite endpoint `POST /login` s predvolenými údajmi (napr. `armin`/`admin`), ktorý vráti platný JWT token.
+  
+- **Použitie tokenu:** Token vkladajte do HTTP hlavičky všetkých chránených požiadaviek:  
+  `Authorization: Bearer <váš_token>`
 
-- **Produkcia:**  
-  Nastavenia sú plne konfigurovateľné cez `AuthOptions` pomocou Environment Variables alebo Secret Managerov.
+- **Konfigurácia:** Nastavenia (Issuer, Audience, Secret Key) sú plne konfigurovateľné cez `AuthOptions` pomocou **Environment Variables** (napr. v súbore `.env` pre Docker) alebo **User Secrets**.
 
 ---
 
