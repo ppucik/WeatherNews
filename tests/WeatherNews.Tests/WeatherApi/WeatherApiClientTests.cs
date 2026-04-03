@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using WeatherNews.Domain.Enums;
+using WeatherNews.Infrastructure.Configuration;
 using WeatherNews.Infrastructure.WeatherApi;
 using WeatherNews.Tests.TestHelpers;
 
@@ -24,27 +26,43 @@ public class WeatherApiClientTests
         var handler = new FakeHttpMessageHandler(_ => response);
         var httpClient = new HttpClient(handler) { BaseAddress = new Uri("http://test") };
         var logger = Mock.Of<ILogger<WeatherApiClient>>();
+        var options = Options.Create(new WeatherApiOptions
+        {
+            BaseUrl = "http://test",
+            ApiKey = "test-api-key"
+        });
 
-        return new WeatherApiClient(httpClient, logger);
+        return new WeatherApiClient(httpClient, options, logger);
     }
 
     [Fact]
     public async Task Returns_success_on_valid_response()
     {
+        // Opravený JSON: Musí obsahovať štruktúru 'current' a pole 'temp_c'
         var json = """
-        { "temperatureC": 10.5, "measuredAtUtc": "2024-01-01T10:00:00Z" }
-        """;
+    {
+        "location": { "name": "Bratislava" },
+        "current": {
+            "temp_c": 10.5,
+            "condition": { "text": "Clear" },
+            "last_updated": "2024-01-01 10:00"
+        }
+    }
+    """;
 
         var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
         {
-            Content = new StringContent(json)
+            Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json")
         };
 
         var client = CreateClient(response);
 
+        // Ak váš klient vracia doménový model, uistite sa, že mapper vnútri klienta 
+        // správne spracoval temp_c na TemperatureC
         var result = await client.GetTemperatureAsync(CityId.Bratislava);
 
         result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
         result.Value!.TemperatureC.Should().Be(10.5m);
     }
 

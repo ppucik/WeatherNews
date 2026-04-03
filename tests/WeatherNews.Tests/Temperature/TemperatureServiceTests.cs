@@ -28,7 +28,7 @@ public class TemperatureServiceTests
     [Fact]
     public async Task Returns_cached_value_when_available()
     {
-        var reading = new TemperatureReading(CityId.Bratislava, 10, DateTime.UtcNow);
+        var reading = new TemperatureReading(CityId.Bratislava, 10, "", DateTime.UtcNow);
         _cache.Setup(c => c.GetAsync(CityId.Bratislava, default)).ReturnsAsync(reading);
 
         var sut = new TemperatureService(_provider.Object, _cache.Object, _clock.Object, _logger.Object);
@@ -46,7 +46,7 @@ public class TemperatureServiceTests
     {
         _cache.Setup(c => c.GetAsync(CityId.Bratislava, default)).ReturnsAsync((TemperatureReading?)null);
 
-        var reading = new TemperatureReading(CityId.Bratislava, 12, DateTime.UtcNow);
+        var reading = new TemperatureReading(CityId.Bratislava, 12, "", DateTime.UtcNow);
         _provider.Setup(p => p.GetTemperatureAsync(CityId.Bratislava, default))
                  .ReturnsAsync(Result<TemperatureReading>.Success(reading));
 

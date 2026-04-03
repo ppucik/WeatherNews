@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path=".env" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="Dockerfile" />

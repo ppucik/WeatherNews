@@ -20,4 +20,10 @@
     <ProjectReference Include="..\WeatherNews.Infrastructure\WeatherNews.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+  </ItemGroup>
+
 </Project>

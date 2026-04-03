@@ -74,6 +74,9 @@ docker run -p 8080:8080 \
   -e Auth__Issuer="weather-api" \
   -e Auth__Audience="weather-api-clients" \
   weathernews-api
+
+# Spustenie externého [Weather API](https://www.weatherapi.com/)
+docker run -e "WeatherApi__ApiKey=VášKľúč" -p 8080:8080 weathernews-api
 ```
 
 ---
@@ -140,5 +143,6 @@ API je zabezpečené pomocou **JWT Bearer Tokenu**.
 
 
 ```bash
-docker build -t weathernews-test --no-cache . > build_log.txt 2>&1
+docker build -t weathernews-api .
+docker build -t weathernews-api --no-cache . > build_log.txt 2>&1
 ```

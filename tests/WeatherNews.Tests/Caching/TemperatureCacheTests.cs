@@ -28,7 +28,7 @@ public class TemperatureCacheTests
 
         var sut = new TemperatureCache(cache.Object, logger, clock.Object);
 
-        var reading = new TemperatureReading(CityId.Bratislava, 10, DateTime.UtcNow);
+        var reading = new TemperatureReading(CityId.Bratislava, 10, "", DateTime.UtcNow);
 
         await sut.SetAsync(reading);
 

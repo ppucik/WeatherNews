@@ -10,11 +10,11 @@ public static class TemperatureEndpoints
     private static readonly FrozenDictionary<string, CityId> CityMap =
         new Dictionary<string, CityId>(StringComparer.OrdinalIgnoreCase)
         {
-            ["bratislava"] = CityId.Bratislava,
-            ["praha"] = CityId.Praha,
-            ["budapest"] = CityId.Budapest,
-            ["vieden"] = CityId.Vieden
-        }.ToFrozenDictionary();
+            [nameof(CityId.Bratislava)] = CityId.Bratislava,
+            [nameof(CityId.Praha)] = CityId.Praha,
+            [nameof(CityId.Budapest)] = CityId.Budapest,
+            [nameof(CityId.Vieden)] = CityId.Vieden
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
     public static IEndpointRouteBuilder MapTemperatureEndpoints(this IEndpointRouteBuilder app)
     {
@@ -24,7 +24,7 @@ public static class TemperatureEndpoints
 
         group.MapGet("/{city}", GetTemperature)
             .WithName("GetTemperature")
-            .WithSummary("Get current temperature for a city")
+            .WithSummary("Get current temperature")
             .WithDescription(
                  "Returns the latest temperature reading for the given city. " +
                  "Data is sourced from an external WeatherAPI and cached until the next " +
@@ -43,12 +43,12 @@ public static class TemperatureEndpoints
         ITemperatureService service,
         CancellationToken cancellationToken)
     {
-        if (!CityMap.TryGetValue(city, out var cityEnum))
+        if (!CityMap.TryGetValue(city, out var cityId))
         {
-            return Results.NotFound(new { message = "City not supported." });
+            return Results.NotFound(new { message = $"City {city} not supported." });
         }
 
-        var result = await service.GetCurrentTemperatureAsync(cityEnum, cancellationToken);
+        var result = await service.GetCurrentTemperatureAsync(cityId, cancellationToken);
 
         if (!result.IsSuccess || result.Value is null)
         {
@@ -56,9 +56,12 @@ public static class TemperatureEndpoints
         }
 
         var reading = result.Value;
+        var displayName = CityMap.First(x => x.Value == cityId).Key;
+
         var response = new TemperatureResponse(
-            City: city.ToLowerInvariant(),
+            City: displayName,
             TemperatureC: Math.Round(reading.TemperatureC, 2),
+            Description: reading.Description,
             MeasuredAtUtc: reading.MeasuredAtUtc);
 
         return Results.Ok(response);
@@ -67,5 +70,6 @@ public static class TemperatureEndpoints
     public sealed record TemperatureResponse(
         string City,
         decimal TemperatureC,
+        string Description,
         DateTime MeasuredAtUtc);
 }

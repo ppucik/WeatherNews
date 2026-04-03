@@ -1,31 +1,38 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WeatherNews.Application.Abstractions;
 using WeatherNews.Application.Common;
-using WeatherNews.Domain.Constants;
 using WeatherNews.Domain.Entities;
 using WeatherNews.Domain.Enums;
+using WeatherNews.Infrastructure.Configuration;
 
 namespace WeatherNews.Infrastructure.WeatherApi;
 
-public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiClient> logger)
+public sealed class WeatherApiClient(HttpClient httpClient,
+    IOptions<WeatherApiOptions> options,
+    ILogger<WeatherApiClient> logger)
     : IWeatherProvider
 {
+    private readonly WeatherApiOptions _settings = options.Value;
+
     public async Task<Result<TemperatureReading>> GetTemperatureAsync(
         CityId cityId,
         CancellationToken cancellationToken = default)
     {
-        int Id = CityConstants.CityIds[cityId];
+        string cityName = cityId.ToString();
 
-        logger.LogInformation("Requesting temperature for {City} (WeatherAPI cityId={CityId})", cityId, Id);
+        logger.LogInformation("Requesting temperature for {City} (WeatherAPI cityId={CityId})", cityId, cityName);
 
         HttpResponseMessage response;
 
         try
         {
-            response = await httpClient.GetAsync($"/{Id}", cancellationToken);
+            var queryUrl = $"current.json?key={_settings.ApiKey}&q={Uri.EscapeDataString(cityName)}&aqi=no";
+            logger.LogInformation("Calling WeatherAPI with URL: {Url}", queryUrl);
+            response = await httpClient.GetAsync(queryUrl, cancellationToken);
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -40,7 +47,7 @@ public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiCl
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            logger.LogWarning("WeatherAPI returned 404 for city {City} (cityId={CityId})", cityId, Id);
+            logger.LogWarning("WeatherAPI returned 404 for city {City}", cityId);
             return Result<TemperatureReading>.Failure("City not found.");
         }
 
@@ -62,16 +69,17 @@ public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiCl
             return Result<TemperatureReading>.Failure("Invalid Weather API response.");
         }
 
-        if (payload is null)
+        if (payload is null || payload.Current is null || payload.Current.Condition is null)
         {
-            logger.LogWarning("WeatherAPI returned null or empty JSON for {City}", cityId);
+            logger.LogWarning("WeatherAPI returned payload missing required fields for {City}", cityId);
             return Result<TemperatureReading>.Failure("Invalid Weather API response.");
         }
 
         var reading = new TemperatureReading(
             cityId,
-            Math.Round((decimal)payload.TemperatureC, 2),
-            payload.MeasuredAtUtc);
+            Math.Round((decimal)payload.Current.TempC, 2),
+            payload.Current.Condition.Text,
+            DateTime.Parse(payload.Current.LastUpdated));
 
         logger.LogInformation(
             "WeatherAPI returned {Temperature}°C for {City} at {TimestampUtc}",
@@ -80,11 +88,5 @@ public sealed class WeatherApiClient(HttpClient httpClient, ILogger<WeatherApiCl
             reading.MeasuredAtUtc);
 
         return Result<TemperatureReading>.Success(reading);
-    }
-
-    private sealed class WeatherApiResponse
-    {
-        public double TemperatureC { get; set; }
-        public DateTime MeasuredAtUtc { get; set; }
     }
 }

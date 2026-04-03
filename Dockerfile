@@ -23,6 +23,9 @@ RUN dotnet restore "WeatherNews.slnx"
 # Kopírovanie zvyšných zdrojových kódov - opravený spojený riadok 
 COPY . .
 
+# Build a Testy (používame --no-restore, aby sme využili predošlý krok)
+RUN dotnet build "src/WeatherNews.API/WeatherNews.API.csproj" -c $BUILD_CONFIGURATION --no-restore
+
 # Spustenie testov pred publikáciou [cite: 2]
 RUN dotnet test "tests/WeatherNews.Tests/WeatherNews.Tests.csproj" \
     --no-restore \
