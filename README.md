@@ -74,12 +74,31 @@ docker run -p 8080:8080 \
   -e Auth__Issuer="weather-api" \
   -e Auth__Audience="weather-api-clients" \
   weathernews-api
-
-# Spustenie externého [Weather API](https://www.weatherapi.com/)
-docker run -e "WeatherApi__ApiKey=VášKľúč" -p 8080:8080 weathernews-api
 ```
 
 ---
+
+### 🔑 Ako získať API kľúč
+
+1. Zaregistrujte sa na [https://www.weatherapi.com](https://www.weatherapi.com).
+2. Po registrácii získate svoj API kľúč v sekcii "My Account".
+
+### Nastavenie API kľúča v aplikácii
+
+Pri spustení aplikácie nastavte environment premennú:
+
+```bash
+docker run -e "WeatherApi__ApiKey=VášKľúč" -p 8080:8080 weathernews-api
+```
+
+alebo pridajte do `appsettings.json`:
+
+```json
+"WeatherApi": {
+  "ApiKey": "VášKľúč",
+  "BaseUrl": "https://api.weatherapi.com/v1/"
+}
+```
 
 ### 🛠️ API Endpointy
 
