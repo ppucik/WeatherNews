@@ -1,4 +1,10 @@
-﻿namespace WeatherNews.Tests.gRPC;
+﻿//using Moq;
+//using WeatherNews.Application.Abstractions;
+//using WeatherNews.Domain.Common;
+//using WeatherNews.Domain.Entities;
+//using WeatherNews.Domain.Enums;
+
+//namespace WeatherNews.Tests.gRPC;
 
 //public class WeatherGrpcServiceTests
 //{

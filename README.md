@@ -114,7 +114,7 @@ alebo pridajte do `appsettings.json`:
 | GET    | /                 | Základné informácie o verzii a prostredí | Nie            |
 | POST   | /login            | Prihlásenie a vygenerovanie JWT tokenu   | Nie            |
 | GET    | /api/temperature/ | REST: Aktuálna teplota v meste           | Bearer JWT     |
-| GET    | /grpc             | gRPC: Vysokovýkonný binárny endpoint     | Nie            |
+| GET    | /grpc             | gRPC: Vysokovýkonný binárny endpoint     |                |
 | GET    | /health           | Health check aplikácie                   | Nie            |
 | GET    | /metrics          | Základné metriky                         | Nie            |
 | GET    | /scalar           | Interaktívna API dokumentácia            | Nie            |
