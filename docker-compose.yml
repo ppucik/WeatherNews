@@ -7,12 +7,17 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8080:8080" # REST
+      - "8081:8081" # gRPC
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-      Auth__JwtKey: "dev-secret-key-change-weather-api"
-      Auth__Issuer: "weather-api"
-      Auth__Audience: "weather-api-clients"
-      WeatherApi__ApiKey: "${WEATHER_API_KEY}"
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Auth__JwtKey=dev-secret-key-change-weather-api
+      - Auth__Issuer=weather-api
+      - Auth__Audience=weather-api-clients
+      - WeatherApi__ApiKey=${WEATHER_API_KEY}
+      # Konfigurácia Kestrel pre dva protokoly
+      - Kestrel__Endpoints__Http__Url=http://+:8080
+      - Kestrel__Endpoints__Http__Protocols=Http1
+      - Kestrel__Endpoints__Grpc__Url=http://+:8081
+      - Kestrel__Endpoints__Grpc__Protocols=Http2
     restart: unless-stopped

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option csharp_namespace = "WeatherNews.API.Protos";
+
+service WeatherService {
+  rpc GetTemperature (TemperatureRequest) returns (TemperatureResponse);
+}
+
+// Toto vygeneruje triedu TemperatureRequest
+message TemperatureRequest {
+  string city = 1;
+}
+
+// Toto vygeneruje triedu TemperatureResponse
+message TemperatureResponse {
+  string city = 1;
+  double temperatureC = 2;
+  string description = 3;
+  string measuredAtUtc = 4;
+}

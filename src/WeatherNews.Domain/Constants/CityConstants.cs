@@ -5,12 +5,12 @@ using WeatherNews.Domain.Enums;
 
 public static class CityConstants
 {
-    public static readonly FrozenDictionary<CityId, int> CityIds =
-        new Dictionary<CityId, int>
+    public static readonly FrozenDictionary<string, CityId> CityMap =
+        new Dictionary<string, CityId>(StringComparer.OrdinalIgnoreCase)
         {
-            [CityId.Bratislava] = 1,
-            [CityId.Praha] = 2,
-            [CityId.Budapest] = 3,
-            [CityId.Vieden] = 4
-        }.ToFrozenDictionary();
+            [nameof(CityId.Bratislava)] = CityId.Bratislava,
+            [nameof(CityId.Praha)] = CityId.Praha,
+            [nameof(CityId.Budapest)] = CityId.Budapest,
+            [nameof(CityId.Vieden)] = CityId.Vieden
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 }

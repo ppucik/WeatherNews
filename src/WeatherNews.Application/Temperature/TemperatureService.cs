@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using WeatherNews.Application.Abstractions;
-using WeatherNews.Application.Common;
+using WeatherNews.Domain.Common;
 using WeatherNews.Domain.Entities;
 using WeatherNews.Domain.Enums;
 

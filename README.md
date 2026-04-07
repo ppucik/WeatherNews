@@ -65,7 +65,7 @@ docker-compose up --build
 # Build obrazu
 docker build -t weathernews-api .
 
-# Spustenie API
+# Spustenie API (REST: 8080, gRPC: 8081)
 docker run -p 8080:8080 -p 8081:8081 weathernews-api
 
 # Spustenie s konfiguráciou JWT (Environment Variables)
@@ -74,7 +74,12 @@ docker run -p 8080:8080 \
   -e Auth__Issuer="weather-api" \
   -e Auth__Audience="weather-api-clients" \
   weathernews-api
+
+# Spustenie gRPC UI (vizuálne rozhranie)
+rpcui -plaintext localhost:8081
 ```
+
+> Inštalácia: [go install github.com/fullstorydev/grpcui/cmd/grpcui@latest]
 
 ---
 
@@ -108,7 +113,8 @@ alebo pridajte do `appsettings.json`:
 | ------ | ----------------- | ---------------------------------------- | -------------- |
 | GET    | /                 | Základné informácie o verzii a prostredí | Nie            |
 | POST   | /login            | Prihlásenie a vygenerovanie JWT tokenu   | Nie            |
-| GET    | /api/temperature/ | Aktuálna teplota v meste                 | Bearer JWT     |
+| GET    | /api/temperature/ | REST: Aktuálna teplota v meste           | Bearer JWT     |
+| GET    | /grpc             | gRPC: Vysokovýkonný binárny endpoint     | Nie            |
 | GET    | /health           | Health check aplikácie                   | Nie            |
 | GET    | /metrics          | Základné metriky                         | Nie            |
 | GET    | /scalar           | Interaktívna API dokumentácia            | Nie            |
@@ -164,8 +170,5 @@ API využíva **JWT Bearer Token** na zabezpečenie chránených endpointov.
   `Program.cs` je udržiavaný v minimalistickom stave (*Thin Program.cs*).  
   Logika endpointov, konfigurácia a infraštruktúra sú striktne oddelené do samostatných modulov a extension metód.
 
-
-```bash
-docker build -t weathernews-api .
-docker build -t weathernews-api --no-cache . > build_log.txt 2>&1
-```
+5. **Dual-Protocol Kestrel Configuration:** 
+  Server je nakonfigurovaný na striktné oddelenie prevádzky: port `8081` je vyhradený pre **HTTP/2 (gRPC)** bez režimu kompatibility, čím sa predchádza problémom s handshake-om pri nešifrovanej komunikácii.

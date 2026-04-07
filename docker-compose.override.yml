@@ -3,7 +3,4 @@ version: "3.9"
 services:
   weathernews-api:
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-    ports:
-      - "8080:8080"
-      - "8081:8081"
+      - ASPNETCORE_ENVIRONMENT=Development

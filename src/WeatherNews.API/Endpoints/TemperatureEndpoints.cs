@@ -1,21 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Frozen;
 using WeatherNews.Application.Abstractions;
-using WeatherNews.Domain.Enums;
+using WeatherNews.Domain.Constants;
 
 namespace WeatherNews.API.Endpoints;
 
 public static class TemperatureEndpoints
 {
-    private static readonly FrozenDictionary<string, CityId> CityMap =
-        new Dictionary<string, CityId>(StringComparer.OrdinalIgnoreCase)
-        {
-            [nameof(CityId.Bratislava)] = CityId.Bratislava,
-            [nameof(CityId.Praha)] = CityId.Praha,
-            [nameof(CityId.Budapest)] = CityId.Budapest,
-            [nameof(CityId.Vieden)] = CityId.Vieden
-        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
-
     public static IEndpointRouteBuilder MapTemperatureEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/temperature")
@@ -43,7 +33,7 @@ public static class TemperatureEndpoints
         ITemperatureService service,
         CancellationToken cancellationToken)
     {
-        if (!CityMap.TryGetValue(city, out var cityId))
+        if (!CityConstants.CityMap.TryGetValue(city, out var cityId))
         {
             return Results.NotFound(new { message = $"City {city} not supported." });
         }
@@ -56,7 +46,7 @@ public static class TemperatureEndpoints
         }
 
         var reading = result.Value;
-        var displayName = CityMap.First(x => x.Value == cityId).Key;
+        var displayName = CityConstants.CityMap.First(x => x.Value == cityId).Key;
 
         var response = new TemperatureResponse(
             City: displayName,

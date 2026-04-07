@@ -1,4 +1,4 @@
-﻿namespace WeatherNews.Application.Common;
+﻿namespace WeatherNews.Domain.Common;
 
 /// <summary>
 /// Represents the outcome of an operation, containing either a successful result value or an error message.

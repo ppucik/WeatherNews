@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WeatherNews.Application.Abstractions;
-using WeatherNews.Application.Common;
+using WeatherNews.Domain.Common;
 using WeatherNews.Domain.Entities;
 using WeatherNews.Domain.Enums;
 using WeatherNews.Infrastructure.Configuration;

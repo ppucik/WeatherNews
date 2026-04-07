@@ -32,6 +32,16 @@ builder.Services.AddInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddWeatherOpenApi();
 
+// gRPC engine
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
+
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(8080, o => o.Protocols = HttpProtocols.Http1);    // REST
+//    options.ListenAnyIP(8081, o => o.Protocols = HttpProtocols.Http2);    // gRPC
+//});
+
 var app = builder.Build();
 
 // --- 2. Middleware Pipeline ---
@@ -40,9 +50,10 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarDocs();
+    app.MapGrpcReflectionService();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseHttpLogging();
 
 app.UseAuthentication();
@@ -53,5 +64,6 @@ app.UseAuthorization();
 app.MapServiceInfoEndpoints();
 app.MapAuthEndpoints();
 app.MapTemperatureEndpoints();
+app.MapGrpcEndpoints();
 
 app.Run();

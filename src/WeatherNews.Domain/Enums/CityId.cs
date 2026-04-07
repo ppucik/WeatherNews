@@ -1,8 +1,5 @@
 ﻿namespace WeatherNews.Domain.Enums;
 
-/// <summary>
-/// Specifies the supported cities.
-/// </summary>
 public enum CityId
 {
     Bratislava = 1,
