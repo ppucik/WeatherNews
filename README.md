@@ -151,6 +151,25 @@ API využíva **JWT Bearer Token** na zabezpečenie chránených endpointov.
 
 ---
 
+### 📌 Kuberneties
+```bash
+1. kubectl apply -f k8s/namespace.yaml
+2. kubectl apply -f k8s/secret.yaml
+3. kubectl apply -f k8s/configmap.yaml
+4. kubectl apply -f k8s/serviceaccount.yaml
+5. kubectl apply -f k8s/network-policy.yaml
+6. kubectl apply -f k8s/service.yaml
+7. kubectl apply -f k8s/deployment.yaml
+8. kubectl apply -f k8s/hpa.yaml
+```
+Verification:
+```bash
+kubectl get all -n weather-system
+kubectl describe deployment weathernews-api -n weather-system
+```
+
+---
+
 ### 🏗️ Architektonické rozhodnutia
 
 1. **Resilience Pipeline:**  
